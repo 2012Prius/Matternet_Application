@@ -1,4 +1,5 @@
 {
+  "clangdAutoArrow.enabled": true,
   "cmake.cmakePath": "${env:LOCALAPPDATA}/stm32cube/bundles/cmake/4.4.0+st.1/bin/cmake.exe",
   "cmake.useCMakePresets": "always",
   "cmake.configureOnOpen": false,

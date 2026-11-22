@@ -20,6 +20,10 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "rcc.h"
+#include "gpio.h"
+#include "uart1.h"
+#include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -99,6 +103,12 @@ int main(void)
 
   /* Configure the system clock */
   SystemClock_Config();
+
+  //TODO: Murilloc -invoke appropriate inits
+  rcc_init();
+  gpio_init();
+  uart1_init();
+
 
   /* USER CODE BEGIN SysInit */
   /* Initialize BSP Led for LED2 */
