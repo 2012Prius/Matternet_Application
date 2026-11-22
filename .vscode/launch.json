@@ -1,0 +1,28 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug UART Printf (ST-LINK)",
+      "type": "stlinkgdbtarget",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "Build firmware",
+      "deviceName": "STM32G474RETx",
+      "runEntry": "main",
+      "gdb": "${env:LOCALAPPDATA}/stm32cube/bundles/gnu-gdb-for-stm32/14.3.1+st.2/bin/arm-none-eabi-gdb.exe",
+      "serverExe": "${env:LOCALAPPDATA}/stm32cube/bundles/stlink-gdbserver/7.14.0+st.2/bin/ST-LINK_gdbserver.exe",
+      "serverCubeProgPath": "${env:LOCALAPPDATA}/stm32cube/bundles/programmer/2.23.0/bin",
+      "serverInterface": "SWD",
+      "serverVerify": true,
+      "serverRtos": {
+        "enabled": false
+      },
+      "imagesAndSymbols": [
+        {
+          "imageFileName": "${workspaceFolder}/build/debug/UART_Printf.elf",
+          "symbolFileName": "${workspaceFolder}/build/debug/UART_Printf.elf"
+        }
+      ]
+    }
+  ]
+}
