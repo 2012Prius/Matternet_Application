@@ -1,24 +1,33 @@
-//  File: gpio.c
-//  This file contains the GPIO setup for the UART1 driver.
-//  Functions include:
-//
-//  init (TODO: Murilloc)
+// File: gpio.c
+// Configures the GPIO pins used by USART1.
 
-//Includes
+/* Includes ------------------------------------------------------------------*/
 #include "gpio.h"
 #include "stm32g474xx.h"
 
-// Macros
-// Static Variables
-// Functions
+/* Private includes ----------------------------------------------------------*/
+
+/* Private typedef -----------------------------------------------------------*/
+
+/* Private define ------------------------------------------------------------*/
+
+/* Private macro -------------------------------------------------------------*/
+
+/* Private variables ---------------------------------------------------------*/
+
+/* Private function prototypes -----------------------------------------------*/
+
+/* Functions -----------------------------------------------------------------*/
 
 // ****************************************************************************
 // Function: gpio_init
-// Description: Configures PC4 as the USART1 transmit pin.
+// Description: Configures PC4 and PC5 as USART1 transmit and receive pins.
 // Parameters: None
 // Returns: None
 // Design:
-//   - TODO: Murilloc
+//   - Select alternate function 7 for USART1 on PC4 (TX) and PC5 (RX).
+//   - Use alternate-function push-pull mode with internal pull-ups and low speed.
+//   - Call HAL_GPIO_Init to apply the settings to GPIOC.
 // ****************************************************************************
 void gpio_init(void)
 {

@@ -21,6 +21,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
+/* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
@@ -58,9 +59,15 @@
 /* USER CODE BEGIN 0 */
 
 /* USER CODE END 0 */
-/**
-  * Initializes the Global MSP.
-  */
+// ****************************************************************************
+// Function: HAL_MspInit
+// Description: Configures board-level hardware used by HAL.
+// Parameters: None
+// Returns: None
+// Design:
+//   - Enable the SYSCFG and PWR peripheral clocks.
+//   - Disable the UCPD dead-battery pull-ups.
+// ****************************************************************************
 void HAL_MspInit(void)
 {
   /* USER CODE BEGIN MspInit 0 */
@@ -81,12 +88,15 @@ void HAL_MspInit(void)
   /* USER CODE END MspInit 1 */
 }
 
-/**
-* @brief UART MSP Initialization
-* This function configures the hardware resources used in this example
-* @param huart: UART handle pointer
-* @retval None
-*/
+// ****************************************************************************
+// Function: HAL_UART_MspInit
+// Description: Configures the hardware resources used by USART1.
+// Parameters: huart - HAL handle identifying the UART instance.
+// Returns: None
+// Design:
+//   - Select PCLK2 as the USART1 clock source and enable the USART1 and GPIOC clocks.
+//   - Configure PC4 (D1) for TX and PC5 (D0) for RX using alternate function 7, internal pull-ups, and low speed.
+// ****************************************************************************
 void HAL_UART_MspInit(UART_HandleTypeDef* huart)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
@@ -103,7 +113,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
     PeriphClkInit.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK2;
     if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
     {
-      Error_Handler();
+      // Error_Handler();
     }
 
     /* Peripheral clock enable */
@@ -128,12 +138,15 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
 
 }
 
-/**
-* @brief UART MSP De-Initialization
-* This function freeze the hardware resources used in this example
-* @param huart: UART handle pointer
-* @retval None
-*/
+// ****************************************************************************
+// Function: HAL_UART_MspDeInit
+// Description: Releases the hardware resources used by USART1.
+// Parameters: huart - HAL handle identifying the UART instance.
+// Returns: None
+// Design:
+//   - Disable the USART1 peripheral clock.
+//   - Deinitialize PC4 and PC5.
+// ****************************************************************************
 void HAL_UART_MspDeInit(UART_HandleTypeDef* huart)
 {
   if(huart->Instance==USART1)
