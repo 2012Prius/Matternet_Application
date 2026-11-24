@@ -4,6 +4,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "uart1.h"
+#include "stm32g4xx_hal_uart.h"
 
 /* Private includes ----------------------------------------------------------*/
 
@@ -96,9 +97,14 @@ void uart_handle_init(void)
 //   - Pass the buffer, length, and timeout to HAL_UART_Transmit.
 //   - Return after transmission completes or HAL reports an error, busy state, or timeout.
 // ****************************************************************************
-HAL_StatusTypeDef uart_handle_tx(const uint8_t *pData, uint16_t Size, uint32_t Timeout)
+HAL_StatusTypeDef uart_handle_tx(const uint8_t *pData, uint16_t Size)
 {
-    return HAL_UART_Transmit(&uart_handle, pData, Size, Timeout);
+    return HAL_UART_Transmit_IT(&uart_handle, pData, Size);
+}
+
+HAL_StatusTypeDef uart_handle_rx(uint8_t *pData, uint16_t Size)
+{
+    return HAL_UART_Receive_IT(&uart_handle, pData, (uint16_t)Size);
 }
 
 void USART1_IRQHandler(void)
@@ -110,7 +116,22 @@ static void uart1_rx_callback_func(UART_HandleTypeDef *puart)
 {
     rx_complete = true;
 }
+
+void set_rx_complete_status( bool status )
+{
+    rx_complete = status;
+}
+
 static void uart1_tx_callback_func(UART_HandleTypeDef *puart)
 {
     tx_complete = true;
+}
+
+bool get_rx_complete_status( void )
+{
+    return rx_complete;
+}
+bool get_tx_complete_status( void )
+{
+    return tx_complete;
 }

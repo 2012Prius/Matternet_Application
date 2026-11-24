@@ -15,12 +15,23 @@
   * in the root directory of this software component.
   * If no LICENSE file comes with this software, it is provided AS-IS.
   *
+     STM32G4xx HAL library initialization:
+       - Configure the Flash prefetch
+       - Systick timer is configured by default as source of time base, but user
+         can eventually implement his proper time base source (a general purpose
+         timer for example or other time source), keeping in mind that Time base
+         duration should be kept 1ms since PPP_TIMEOUT_VALUEs are defined and
+         handled in milliseconds basis.
+       - Set NVIC Group Priority to 4
+       - Low Level Initialization
+
   ******************************************************************************
   */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "rcc.h"
 #include "gpio.h"
+#include "stm32g4xx_nucleo.h"
 #include "uart1.h"
 #include "gpio.h"
 #include <time.h>
@@ -39,7 +50,8 @@
 
 /* Private variables ---------------------------------------------------------*/
 
-
+static bool rx_complete = false;
+static bool tx_complete = false;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
@@ -54,9 +66,7 @@ int iar_fputc(int ch);
 #elif defined(__GNUC__)
 #define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
 #endif /* __ICCARM__ */
-/* USER CODE END PFP */
 
-/* Private user code ---------------------------------------------------------*/
 
 
 // ****************************************************************************
@@ -73,18 +83,7 @@ int iar_fputc(int ch);
 int main(void)
 {
 
-
-  /* STM32G4xx HAL library initialization:
-       - Configure the Flash prefetch
-       - Systick timer is configured by default as source of time base, but user
-         can eventually implement his proper time base source (a general purpose
-         timer for example or other time source), keeping in mind that Time base
-         duration should be kept 1ms since PPP_TIMEOUT_VALUEs are defined and
-         handled in milliseconds basis.
-       - Set NVIC Group Priority to 4
-       - Low Level Initialization
-     */
-
+  uint8_t buffer;
 
   /* Initialize HAL and its default time base. */
   HAL_Init();
@@ -103,8 +102,24 @@ int main(void)
 
   while (1)
   {
-    // Idle until receive handling is added.
-    HAL_Delay(1000);
+
+    uart_handle_rx(&buffer, 1);
+
+    //recv
+    rx_complete = get_rx_complete_status();
+
+    if(rx_complete)
+    {
+      //rx finished, tx data out the UART
+      // rearm rx_complete ready to recieve again
+      set_rx_complete_status(false);
+
+      //TODO: Murilloc - use this if necessary
+      tx_complete = tx_complete;
+      uart_handle_tx(&buffer,1);
+    }
+
+    BSP_LED_Toggle(LED2);
   }
 }
 
@@ -123,7 +138,7 @@ int main(void)
 PUTCHAR_PROTOTYPE
 {
   uint8_t byte = (uint8_t)ch;
-  if (uart_handle_tx(&byte, 1, 100) != HAL_OK)
+  if (uart_handle_tx(&byte, 1) != HAL_OK)
   {
     return EOF;
   }
