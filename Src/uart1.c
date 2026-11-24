@@ -1,4 +1,4 @@
-// File: uart1.c
+// File: uart_handle.c
 // Created by Cameron on 11/21/2026
 // Initializes USART1 and provides blocking transmit through the HAL.
 
@@ -14,14 +14,19 @@
 /* Private macro -------------------------------------------------------------*/
 
 /* Private variables ---------------------------------------------------------*/
-UART_HandleTypeDef uart1;
+UART_HandleTypeDef uart_handle;
 
 /* Private function prototypes -----------------------------------------------*/
+static void uart1_rx_callback_func(UART_HandleTypeDef *puart);
+static void uart1_tx_callback_func(UART_HandleTypeDef *puart);
+void USART1_IRQHandler(void);
+static volatile bool rx_complete;
+static volatile bool tx_complete;
 
 /* Functions -----------------------------------------------------------------*/
 
 // ****************************************************************************
-// Function: uart1_init
+// Function: uart_handle_init
 // Description: Initializes USART1 for transmit and receive at 115200 baud.
 // Parameters: None
 // Returns: None
@@ -31,31 +36,57 @@ UART_HandleTypeDef uart1;
 //   - Disable one-bit sampling and leave advanced features unconfigured.
 //   - Call HAL_UART_Init with the USART1 handle and halt on failure.
 // ****************************************************************************
-void uart1_init(void)
+void uart_handle_init(void)
 {
-    uart1.Instance                    = USART1;
-    uart1.Init.BaudRate               = 115200;
-    uart1.Init.WordLength             = UART_WORDLENGTH_8B;
-    uart1.Init.StopBits               = UART_STOPBITS_1;
-    uart1.Init.Parity                 = UART_PARITY_NONE;
-    uart1.Init.Mode                   = UART_MODE_TX_RX;
-    uart1.Init.HwFlowCtl              = UART_HWCONTROL_NONE;
-    uart1.Init.OverSampling           = UART_OVERSAMPLING_16;
-    uart1.Init.OneBitSampling         = UART_ONE_BIT_SAMPLE_DISABLE;
-    uart1.Init.ClockPrescaler         = UART_PRESCALER_DIV1;
-    uart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+    uart_handle.Instance                    = USART1;
+    uart_handle.Init.BaudRate               = 115200;
+    uart_handle.Init.WordLength             = UART_WORDLENGTH_8B;
+    uart_handle.Init.StopBits               = UART_STOPBITS_1;
+    uart_handle.Init.Parity                 = UART_PARITY_NONE;
+    uart_handle.Init.Mode                   = UART_MODE_TX_RX;
+    uart_handle.Init.HwFlowCtl              = UART_HWCONTROL_NONE;
+    uart_handle.Init.OverSampling           = UART_OVERSAMPLING_16;
+    uart_handle.Init.OneBitSampling         = UART_ONE_BIT_SAMPLE_DISABLE;
+    uart_handle.Init.ClockPrescaler         = UART_PRESCALER_DIV1;
+    uart_handle.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
 
-    if (HAL_UART_Init(&uart1) != HAL_OK)
+
+
+    if (HAL_UART_Init(&uart_handle) != HAL_OK)
     {
         while (1)
         {
+            // TODO: Murilloc - implement Error handler
+            // Wait here if USART1 initialization fails.
+        }
+
+    }
+
+
+    // Define callback functions
+    if (HAL_UART_RegisterCallback(&uart_handle, HAL_UART_RX_COMPLETE_CB_ID, uart1_rx_callback_func) != HAL_OK)
+    {
+        while (1)
+        {
+            // TODO: Murilloc - implement Error handler
+            // Wait here if USART1 initialization fails.
+        } 
+    }
+    if (HAL_UART_RegisterCallback(&uart_handle, HAL_UART_TX_COMPLETE_CB_ID, uart1_tx_callback_func) != HAL_OK)
+    {
+        while (1)
+        {
+            // TODO: Murilloc - implement Error handler
             // Wait here if USART1 initialization fails.
         }
     }
 
+    //TODO: Murilloc- Should this variable be moved?
+    rx_complete = false;
+    tx_complete = false;
 }
 // ****************************************************************************
-// Function: uart1_tx
+// Function: uart_handle_tx
 // Description: Transmits a buffer over USART1 in blocking mode.
 // Parameters: pData - Buffer containing the bytes to transmit.
 //             Size - Number of bytes to transmit.
@@ -65,7 +96,21 @@ void uart1_init(void)
 //   - Pass the buffer, length, and timeout to HAL_UART_Transmit.
 //   - Return after transmission completes or HAL reports an error, busy state, or timeout.
 // ****************************************************************************
-HAL_StatusTypeDef uart1_tx(const uint8_t *pData, uint16_t Size, uint32_t Timeout)
+HAL_StatusTypeDef uart_handle_tx(const uint8_t *pData, uint16_t Size, uint32_t Timeout)
 {
-    return HAL_UART_Transmit(&uart1, pData, Size, Timeout);
+    return HAL_UART_Transmit(&uart_handle, pData, Size, Timeout);
+}
+
+void USART1_IRQHandler(void)
+{
+    HAL_UART_IRQHandler(&uart_handle);
+}
+
+static void uart1_rx_callback_func(UART_HandleTypeDef *puart)
+{
+    rx_complete = true;
+}
+static void uart1_tx_callback_func(UART_HandleTypeDef *puart)
+{
+    tx_complete = true;
 }

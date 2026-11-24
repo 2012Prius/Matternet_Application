@@ -89,17 +89,13 @@ int main(void)
   /* Initialize HAL and its default time base. */
   HAL_Init();
 
-  /* USER CODE BEGIN Init */
-
-  /* USER CODE END Init */
-
   /* Configure the system clock */
   SystemClock_Config();
 
   // Initialize the UART clocks, pins, and driver, then initialize LED2.
   rcc_init();
   gpio_init();
-  uart1_init();
+  uart_handle_init();
   BSP_LED_Init(LED2);
 
   // Print the firmware build date and time.
@@ -127,7 +123,7 @@ int main(void)
 PUTCHAR_PROTOTYPE
 {
   uint8_t byte = (uint8_t)ch;
-  if (uart1_tx(&byte, 1, 100) != HAL_OK)
+  if (uart_handle_tx(&byte, 1, 100) != HAL_OK)
   {
     return EOF;
   }

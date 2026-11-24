@@ -3,11 +3,10 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include <stdint.h>
+#include <stdbool.h>
 #include "stm32g4xx.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+
 
 
 /* Exported types ------------------------------------------------------------*/
@@ -19,10 +18,8 @@ extern "C" {
 /* Exported variables --------------------------------------------------------*/
 
 /* Exported function prototypes ----------------------------------------------*/
-void uart1_init(void);
-HAL_StatusTypeDef uart1_tx(const uint8_t *pData, uint16_t Size, uint32_t Timeout);
+void uart_handle_init(void);
+HAL_StatusTypeDef uart_handle_tx(const uint8_t *pData, uint16_t Size, uint32_t Timeout);
 void uart1_rx(uint8_t *data, uint16_t len);
 
-#ifdef __cplusplus
-}
-#endif
+
