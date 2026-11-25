@@ -15,6 +15,12 @@ add_executable(UART_Printf
     ${example}/User/syscalls.c
     ${example}/User/sysmem.c
     ${bsp}/stm32g4xx_nucleo.c
+    Inc/uart1.h
+    Src/uart1.c
+    Inc/rcc.h
+    Src/rcc.c
+    Inc/gpio.h
+    Src/gpio.c
 )
 
 foreach(module IN ITEMS
